@@ -145,14 +145,22 @@ void spraakVolumeEvent() {
 		pinDtClockwiseSpraak = true;
 				
 		if ((encoderPosCountSpraak < 16) && ((millis() - lastMillisSpraak) > idleMillis)) {
-
-			//String command = spraakvolume + String(" +") + String(lastEncoderPosCountSpraak + encoderPosCountSpraak);
-			String command = spraakvolume + String(" +") + String(lastEncoderPosCountSpraak = encoderPosCountSpraak);
+			
+			String command = spraakvolume;
+			if (encoderPosCountSpraak < 20)
+			{
+				command = command + String(" -") + String(encoderPosCountSpraak - 20);
+			}
+			else
+			{
+				command = command + String(" +") + String(encoderPosCountSpraak - 20);
+			}
 			Serial.println(xilicaClient->sendCommand(command));
-
-			encoderPosCountSpraak = 
-
-			encoderPosCountSpraak = encoderPosCountSpraak + 1;
+			//String command = spraakvolume + String(" +") + String(lastEncoderPosCountSpraak + encoderPosCountSpraak);
+			//String command = spraakvolume + String(" +") + String(lastEncoderPosCountSpraak = encoderPosCountSpraak);
+			//Serial.println(xilicaClient->sendCommand(command));
+								
+			encoderPosCountSpraak = encoderPosCountSpraak + 1;	
 			if (encoderPosCountSpraak % 2 == 0) {
 				ledOnCountSpraak = ledOnCountSpraak + 1;
 			}
@@ -160,11 +168,11 @@ void spraakVolumeEvent() {
 	}
 	else { // Otherwise PIN_DT changed first and we're moving CCW
 		pinDtClockwiseSpraak = false;
-		if ((encoderPosCountSpraak > 0) && ((millis() - lastMillisSpraak) > idleMillis)) {
+		if ((encoderPosCountSpraak >= 0) && ((millis() - lastMillisSpraak) > idleMillis)) {
 
 
 			
-			String command = spraakvolume + String(" -") + String(lastEncoderPosCountSpraak = encoderPosCountSpraak);
+			String command = spraakvolume + String(" +") + String(lastEncoderPosCountSpraak = encoderPosCountSpraak);
 			//String command = spraakvolume + String(" -") + String(lastEncoderPosCountSpraak + encoderPosCountSpraak);
 			Serial.println(xilicaClient->sendCommand(command));
 
@@ -177,7 +185,7 @@ void spraakVolumeEvent() {
 
 				//Serial.print("ledOnCount: ");
 				//Serial.println(ledOnCount);
-			}
+			}	
 			FastLED.show();
 		}
 	}
