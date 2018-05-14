@@ -171,10 +171,18 @@ void spraakVolumeEvent() {
 		if ((encoderPosCountSpraak >= 0) && ((millis() - lastMillisSpraak) > idleMillis)) {
 
 
-			
-			String command = spraakvolume + String(" +") + String(lastEncoderPosCountSpraak = encoderPosCountSpraak);
+			String command = spraakvolume;
+			if (encoderPosCountSpraak < 20)
+			{
+				command = command + String(" -") + String(encoderPosCountSpraak - 20);
+			}
+			else
+			{
+				command = command + String(" +") + String(encoderPosCountSpraak - 20);
+			}
+			//String command = spraakvolume + String(" +") + String(lastEncoderPosCountSpraak = encoderPosCountSpraak);
 			//String command = spraakvolume + String(" -") + String(lastEncoderPosCountSpraak + encoderPosCountSpraak);
-			Serial.println(xilicaClient->sendCommand(command));
+			//Serial.println(xilicaClient->sendCommand(command));
 
 
 			encoderPosCountSpraak = encoderPosCountSpraak - 1;
