@@ -41,6 +41,9 @@ int pinClkLastValMuziek;
 int clkValSpraak;
 int clkValMuziek;
 
+int lastEncoderPosCountSpraak = 0;
+int lastEncoderPosCountMuziek = 0;
+
 // Clockwise? true/false
 boolean pinDtClockwiseSpraak;
 boolean pinDtClockwiseMuziek;
@@ -58,8 +61,8 @@ int pinButtons[] = { 22,23,24,25,26,27 };
 int buttonLedInput[] = { 2,3,4,5,6,7 };
 
 char mutemic[] = "SETRAW mutemic";
-char spraakvolume[] = "SET spraakkvolume";
-char muziekvolume[] = "SET muziekvolume";
+char spraakvolume[] = "SET volspraak";
+char muziekvolume[] = "SET volmuziek";
 
 
 int stateButton[] = { LOW,LOW,LOW,LOW,LOW,LOW };
@@ -143,10 +146,11 @@ void spraakVolumeEvent() {
 				
 		if ((encoderPosCountSpraak < 16) && ((millis() - lastMillisSpraak) > idleMillis)) {
 
-			//xilicaClient->sendCommand("SETRAW volumespraak+ 1");
-
-			String command = spraakvolume + encoderPosCountSpraak - 1 + String("+1");
+			//String command = spraakvolume + String(" +") + String(lastEncoderPosCountSpraak + encoderPosCountSpraak);
+			String command = spraakvolume + String(" +") + String(lastEncoderPosCountSpraak = encoderPosCountSpraak);
 			Serial.println(xilicaClient->sendCommand(command));
+
+			encoderPosCountSpraak = 
 
 			encoderPosCountSpraak = encoderPosCountSpraak + 1;
 			if (encoderPosCountSpraak % 2 == 0) {
@@ -158,9 +162,10 @@ void spraakVolumeEvent() {
 		pinDtClockwiseSpraak = false;
 		if ((encoderPosCountSpraak > 0) && ((millis() - lastMillisSpraak) > idleMillis)) {
 
-			//xilicaClient->sendCommand("SETRAW volumespraak- 1");
 
-			String command = spraakvolume + encoderPosCountSpraak - 1 + String("-1"); 
+			
+			String command = spraakvolume + String(" -") + String(lastEncoderPosCountSpraak = encoderPosCountSpraak);
+			//String command = spraakvolume + String(" -") + String(lastEncoderPosCountSpraak + encoderPosCountSpraak);
 			Serial.println(xilicaClient->sendCommand(command));
 
 
@@ -214,7 +219,7 @@ void muziekVolumeEvent() {
 			//xilicaClient->sendCommand("SETRAW volumemuziek+ 1");
 
 			//
-			String command = muziekvolume + encoderPosCountMuziek - 1 + String("+1");
+			String command = muziekvolume + encoderPosCountMuziek - 1 + String("1");
 			Serial.println(xilicaClient->sendCommand(command));
 
 			encoderPosCountMuziek = encoderPosCountMuziek + 1;
