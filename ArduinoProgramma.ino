@@ -19,8 +19,8 @@
 // define rotaries pins
 #define PIN_CLK_SPRAAK 33
 #define PIN_DT_SPRAAK 35
-#define PIN_CLK_MUZIEK 37
-#define PIN_DT_MUZIEK 39
+#define PIN_CLK_MUZIEK 32
+#define PIN_DT_MUZIEK 34
 
 // define IDLE time rotaries
 int idleMillis = 80;
@@ -58,6 +58,9 @@ int pinButtons[] = { 22,23,24,25,26,27 };
 int buttonLedInput[] = { 2,3,4,5,6,7 };
 
 char mutemic[] = "SETRAW mutemic";
+char spraakvolume[] = "SET spraakkvolume";
+char muziekvolume[] = "SET muziekvolume";
+
 
 int stateButton[] = { LOW,LOW,LOW,LOW,LOW,LOW };
 int stateButtonLed[] = { LOW,LOW,LOW,LOW,LOW,LOW };
@@ -68,12 +71,14 @@ long debounce = 200;
 
 
 
+
+
+
 void setup() {
 	FastLED.addLeds<WS2812B, VOLUME_LEDS_SPRAAK_PIN>(ledsSpraak, NUM_LEDS);
 	FastLED.addLeds<WS2812B, VOLUME_LEDS_MUZIEK_PIN>(ledsMuziek, NUM_LEDS);
-
-
-
+	FastLED.setBrightness(20);
+		
 	// set pins Encoder 
 	pinMode(PIN_CLK_SPRAAK, INPUT);
 	pinMode(PIN_DT_SPRAAK, INPUT);
@@ -86,33 +91,37 @@ void setup() {
 	*/
 	pinClkLastValSpraak = digitalRead(PIN_CLK_SPRAAK);
 	pinClkLastValMuziek = digitalRead(PIN_CLK_MUZIEK);
+	
+	////////////////////start animation/////////////////////////
 
-
-
-
-	////start animation
-
-	//for (int i = 0; i < VOLUME_LEDS_SPRAAK_PIN, VOLUME_LEDS_MUZIEK_PIN; i++) {
-	//	// set our current dot to red
-	//	ledsSpraak, ledsMuziek[i] = CRGB::Red;
-	//	FastLED.show();
-	//	// clear our current dot before we move on
-	//	ledsSpraak, ledsMuziek[i] = CRGB::Black;
-	//	delay(100);
-	//}
-
-	//for (int i = VOLUME_LEDS_SPRAAK_PIN, VOLUME_LEDS_MUZIEK_PIN - 1; i >= 0; i--) {
-	//	// set our current dot to red
-	//	ledsSpraak, ledsMuziek[i] = CRGB::Red;
-	//	FastLED.show();
-	//	// clear our current dot before we move on
-	//	ledsSpraak, ledsMuziek[i] = CRGB::Black;
-	//	delay(100);
-	//}
+	for (int i = 0; i < NUM_LEDS; i++) {
+		// set our current dot to red
+		ledsMuziek[i] = CRGB::Blue;
+		ledsSpraak[i] = CRGB::Blue;
+		FastLED.show();
+		// clear our current dot before we move on
+		ledsMuziek[i] = CRGB::Blue;
+		ledsSpraak[i] = CRGB::Blue;
+		delay(100);
+		}
+		{  
+		delay(1000);
+		}
+	for (int i = NUM_LEDS -1; i >= 0; i--) {
+		// set our current dot to red
+		ledsMuziek[i] = CRGB::Blue;
+		ledsSpraak[i] = CRGB::Blue;
+		FastLED.show();
+		// clear our current dot before we move on
+		ledsMuziek[i] = CRGB::Black;
+		ledsSpraak[i] = CRGB::Black;
+		delay(100);
+	}
+	////////////////////end animation/////////////////////////
 
 	Serial.begin (115200);
 	FastLED.clear();
-	FastLED.setBrightness(40);
+	FastLED.setBrightness(20);
 	FastLED.show();
 
 	// init buttons and buttonLeds
@@ -134,7 +143,10 @@ void spraakVolumeEvent() {
 				
 		if ((encoderPosCountSpraak < 16) && ((millis() - lastMillisSpraak) > idleMillis)) {
 
-			xilicaClient->sendCommand("SETRAW volumespraak+ 1");
+			//xilicaClient->sendCommand("SETRAW volumespraak+ 1");
+
+			String command = spraakvolume + encoderPosCountSpraak - 1 + String("+1");
+			Serial.println(xilicaClient->sendCommand(command));
 
 			encoderPosCountSpraak = encoderPosCountSpraak + 1;
 			if (encoderPosCountSpraak % 2 == 0) {
@@ -146,7 +158,11 @@ void spraakVolumeEvent() {
 		pinDtClockwiseSpraak = false;
 		if ((encoderPosCountSpraak > 0) && ((millis() - lastMillisSpraak) > idleMillis)) {
 
-			xilicaClient->sendCommand("SETRAW volumespraak- 1");
+			//xilicaClient->sendCommand("SETRAW volumespraak- 1");
+
+			String command = spraakvolume + encoderPosCountSpraak - 1 + String("-1"); 
+			Serial.println(xilicaClient->sendCommand(command));
+
 
 			encoderPosCountSpraak = encoderPosCountSpraak - 1;
 						
@@ -195,7 +211,11 @@ void muziekVolumeEvent() {
 
 		if ((encoderPosCountMuziek < 16) && ((millis() - lastMillisMuziek) > idleMillis)) {
 
-			xilicaClient->sendCommand("SETRAW volumemuziek+ 1");
+			//xilicaClient->sendCommand("SETRAW volumemuziek+ 1");
+
+			//
+			String command = muziekvolume + encoderPosCountMuziek - 1 + String("+1");
+			Serial.println(xilicaClient->sendCommand(command));
 
 			encoderPosCountMuziek = encoderPosCountMuziek + 1;
 			if (encoderPosCountMuziek % 2 == 0) {
@@ -207,7 +227,11 @@ void muziekVolumeEvent() {
 		pinDtClockwiseMuziek = false;
 		if ((encoderPosCountMuziek > 0) && ((millis() - lastMillisMuziek) > idleMillis)) {
 
-			xilicaClient->sendCommand("SETRAW volumemuziek- 1");
+			//xilicaClient->sendCommand("SET volumemuziek- 1");
+
+			String command = muziekvolume + encoderPosCountMuziek -1 + String("+1");
+			Serial.println(xilicaClient->sendCommand(command));
+			
 
 
 			encoderPosCountMuziek = encoderPosCountMuziek - 1;
