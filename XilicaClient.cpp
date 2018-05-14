@@ -41,6 +41,7 @@ void XilicaClient::init()
 	else {
 		// if you didn't get a connection to the server:
 		Serial.println("connection failed");
+
 	}
 }
 
@@ -48,6 +49,7 @@ void XilicaClient::clientLoop()
 {
 	if (!client.connected()) {
 		// if you get a connection, report back via serial:
+		client.stop();
 		if (client.connect(server, 10007)) {
 			Serial.println("connected");
 		}
