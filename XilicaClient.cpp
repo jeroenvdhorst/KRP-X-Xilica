@@ -4,6 +4,8 @@
 
 #include "XilicaClient.h"
 
+bool socketOpen = false;
+
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
 byte mac[] = {
@@ -32,8 +34,9 @@ void XilicaClient::init()
 	
 	// give the Ethernet shield a second to initialize:
 	delay(1000);
-	Serial.println("connecting...");
 	Serial.println(Ethernet.localIP());
+	Serial.print("connecting to: ");
+	Serial.println(server);
 	// if you get a connection, report back via serial:
 	if (client.connect(server, 10007)) {
 		Serial.println("connected");
@@ -47,9 +50,28 @@ void XilicaClient::init()
 
 void XilicaClient::clientLoop()
 {
-	if (!client.connected()) {
-		// if you get a connection, report back via serial:
+	if (client.connected()) {
+		socketOpen = true;
+		if (client.available()) {
+			while (client.available()) {
+				Serial.print((char)client.read());
+			}
+			Serial.println("");
+		}
+		
+	}
+	else if (socketOpen) {
+		Serial.println("lost connection");
 		client.stop();
+		socketOpen = false;
+	}
+}
+
+void XilicaClient::checkConnected()
+{
+	if (!client.connected()) {
+		if (socketOpen) client.stop();
+
 		if (client.connect(server, 10007)) {
 			Serial.println("connected");
 		}
@@ -60,36 +82,11 @@ void XilicaClient::clientLoop()
 			return;
 		}
 	}
-	//// if there are incoming bytes available
-	//// from the server, read them and print them:
-	//if (client.available()) {
-	//	char c = client.read();
-	//	Serial.print(c);
-	//}
-
-	//// as long as there are bytes in the serial queue,
-	//// read them and send them out the socket if it's open:
-	//while (Serial.available() > 0) {
-	//	char inChar = Serial.read();
-	//	if (client.connected()) {
-	//		client.print(inChar);
-	//	}
-	//}
-
-	//// if the server's disconnected, stop the client:
-	//	if (!client.connected()) {
-	//		Serial.println();
-	//		Serial.println("disconnecting.");
-	//		client.stop();
-	//		// do nothing:
-	//	}
-	while (client.available()) {
-		Serial.print((char)client.read());
-	}
 }
 
 String XilicaClient::sendCommand(String command)
 {
+	checkConnected();
 	String buffer = "";
 	client.print(command.c_str());
 	client.print('\r');

@@ -21,6 +21,7 @@ class XilicaClient
 	 XilicaClient();
 	 void init();
 	 void clientLoop();
+	 void checkConnected();
 	 String sendCommand(String command);
 };
 

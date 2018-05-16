@@ -233,11 +233,17 @@ void spraakVolumeEvent() {
 
 void muziekVolumeEvent() {
 
+	
+
 	if (digitalRead(PIN_DT_MUZIEK) != clkValMuziek) { // Means pin CLK Changed first -We're Rotating Clockwise
+
+		////Serial.println(encoderPosCountMuziek);
 
 		pinDtClockwiseMuziek = true;
 
 		if ((encoderPosCountMuziek < 32) && ((millis() - lastMillisMuziek) > idleMillis)) {
+
+			////Serial.println("CW");
 
 			encoderPosCountMuziek = encoderPosCountMuziek + 1;
 
@@ -251,23 +257,35 @@ void muziekVolumeEvent() {
 				command = command + String(" +") + String(encoderPosCountMuziek - 20);
 			}
 			Serial.println(xilicaClient->sendCommand(command));
+
 			//String command = spraakvolume + String(" +") + String(lastEncoderPosCountSpraak + encoderPosCountSpraak);
 			//String command = spraakvolume + String(" +") + String(lastEncoderPosCountSpraak = encoderPosCountSpraak);
 			//Serial.println(xilicaClient->sendCommand(command));							
 
 			if (encoderPosCountMuziek % 4 == 0) {
 				ledOnCountMuziek = ledOnCountMuziek + 1;
+				
 				//Serial.println("LED:");
-				//Serial.println(ledOnCountSpraak);
+				//Serial.println(encoderPosCountMuziek);
+
+				//Serial.print("ledOnCount: ");
+				//Serial.println(ledOnCountMuziek);
 			}
 		}
 	}
 	else { // Otherwise PIN_DT changed first and we're moving CCW
+
+		////Serial.println(encoderPosCountMuziek);
+
 		pinDtClockwiseMuziek = false;
 		if ((encoderPosCountMuziek > 0) && ((millis() - lastMillisMuziek) > idleMillis)) {
+			
+			////Serial.println("CCW");
+			
 			// encoderPosCount = 0;
 			encoderPosCountMuziek = encoderPosCountMuziek - 1;
 			// encoderPosCount = 1;
+
 
 			String command = muziekvolume;
 			if (encoderPosCountMuziek < 20)
@@ -278,11 +296,11 @@ void muziekVolumeEvent() {
 			{
 				command = command + String(" +") + String(encoderPosCountMuziek - 20);
 			}
+
+
 			//String command = spraakvolume + String(" +") + String(lastEncoderPosCountSpraak = encoderPosCountSpraak);
 			//String command = spraakvolume + String(" -") + String(lastEncoderPosCountSpraak + encoderPosCountSpraak);
 			Serial.println(xilicaClient->sendCommand(command));
-
-
 
 
 			if (encoderPosCountMuziek % 4 == 0) {
@@ -291,10 +309,10 @@ void muziekVolumeEvent() {
 				ledOnCountMuziek = ledOnCountMuziek - 1;
 
 				//Serial.println("LED:");
-				//Serial.println(ledOnCountSpraak);
+				//Serial.println(encoderPosCountMuziek);
 
 				//Serial.print("ledOnCount: ");
-				//Serial.println(ledOnCount);
+				//Serial.println(ledOnCountMuziek);
 			}
 			FastLED.show();
 		}
@@ -374,7 +392,13 @@ void buttonsLoop() {
 }
 
 void loop() {
+	/*Serial.print("CLK_MUZIEK: ");
+	Serial.println(digitalRead(PIN_CLK_MUZIEK));
+	
 
+	Serial.print("DT_MUZIEK: ");
+	Serial.println(digitalRead(PIN_DT_MUZIEK));
+	delay(1);*/
 	buttonsLoop();
 
 	clkValSpraak = digitalRead(PIN_CLK_SPRAAK);
